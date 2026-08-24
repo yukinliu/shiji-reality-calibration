@@ -136,7 +136,10 @@
 
   function field(name, label, hint = '', optional = false, rows = 5) {
     const value = answers[name] || '';
-    return `<label class="text-field"><span class="field-label">${label}${optional ? '<em>选填</em>' : ''}</span>${hint ? `<span class="field-hint">${hint}</span>` : ''}<textarea rows="${rows}" data-field="${name}" placeholder="请写下真实经历或感受……">${esc(value)}</textarea><span class="char-count">${String(value).trim().length} 字</span></label>`;
+    const guidance = optional
+      ? `如果愿意，建议尽量补充，这会帮助报告更贴近你的真实情况；如果不想回答或感到不舒服，也可以不填。${hint ? ` ${hint}` : ''}`
+      : hint;
+    return `<label class="text-field"><span class="field-label">${label}${optional ? '<em>选填</em>' : ''}</span>${guidance ? `<span class="field-hint">${guidance}</span>` : ''}<textarea rows="${rows}" data-field="${name}" placeholder="请写下真实经历或感受……">${esc(value)}</textarea><span class="char-count">${String(value).trim().length} 字</span></label>`;
   }
 
   function subheading(title, note) { return `<div class="subheading"><h2>${title}</h2><p>${note}</p></div>`; }
@@ -145,8 +148,8 @@
     if (index === 0) return `<p class="helper">多选，最多选择2项；然后从已选主题中指定一项重点展开。</p>${choices('focus', 2)}${primaryFocus()}${field('focusQuestion', '你目前最想弄清楚的问题是什么？', '请用一句话说明，建议30—80字。', false, 3)}`;
     if (index === 1) return `${field('selfNow', '如果暂时不介绍年龄、职业和家庭身份，你会用哪一句话描述现在的自己？', '建议50字以内。', false, 3)}${subheading('别人较常肯定你什么？', '多选，最多选择3项。')}${choices('positive', 3)}${subheading('出现摩擦时，别人较常怎样评价你？', '多选，最多选择2项。')}${choices('friction', 2)}`;
     if (index === 2) return `<p class="helper">请写1件近两年真实发生的事情，建议100—150字。它不需要是很大的成就。</p><div class="prompt-box">写成一段完整经历即可：当时需要处理什么、你采取了哪些关键行动、什么让你坚持、最后形成什么结果，以及你从中确认了什么能力。</div>${field('representativeExperience', '你的真实经历', '', false, 8)}`;
-    if (index === 3) return `<p class="helper">多选，最多选择2项。</p>${choices('complex', 2)}${field('complexCase', '最近一次遇到复杂问题时，你最先做了什么？', '选填，建议50字以内。', true, 3)}`;
-    if (index === 4) return `${subheading('让你更愿意投入的条件', '多选，最多选择3项。')}${choices('invest', 3)}${subheading('让你容易失去动力的条件', '多选，最多选择2项。')}${choices('lose', 2)}${field('investExample', '一个“即使没人催促，你也愿意持续做”的例子', '选填，建议50字以内。', true, 3)}`;
+    if (index === 3) return `<p class="helper">多选，最多选择2项。</p>${choices('complex', 2)}${field('complexCase', '最近一次遇到复杂问题时，你最先做了什么？', '建议50字以内。', true, 3)}`;
+    if (index === 4) return `${subheading('让你更愿意投入的条件', '多选，最多选择3项。')}${choices('invest', 3)}${subheading('让你容易失去动力的条件', '多选，最多选择2项。')}${choices('lose', 2)}${field('investExample', '一个“即使没人催促，你也愿意持续做”的例子', '建议50字以内。', true, 3)}`;
     if (index === 5) return `${subheading('最先出现的反应', '多选，最多选择2项。')}${choices('pressure', 2)}<div class="prompt-box">请简短说明：什么触发了压力？什么方式真正帮助你恢复？大约多久开始缓解？不必描述隐私细节。</div>${field('pressureExperience', '一次近期压力经历', '合计建议50—100字。', false, 5)}`;
     if (index === 6) return `<p class="helper">这里的“重要关系”可以是伴侣、家人、朋友或长期合作伙伴。多选，最多选择2项。</p>${choices('relationship', 2)}${field('relationshipNeed', '关系中，你最难直接表达的需要是什么？', '请用一句话说明，建议50字以内；不确定时可以跳过。', true, 3)}`;
     if (index === 7) {
@@ -154,19 +157,20 @@
       const [label, question] = DYNAMIC[answers.primaryFocus];
       return `<div class="dynamic-sign">根据第1题，你最希望重点展开：<strong>${label}</strong></div>${field('dynamicAnswer', question, '建议50—100字。', false, 5)}`;
     }
-    return `<p class="helper">选填，建议100—200字。不填写不会减少报告主体内容。</p><div class="prompt-box">可以围绕三个问题展开：事情发生前你怎样理解自己；事情发生后什么认识发生了变化；这种变化现在怎样影响你。</div>${field('turningPoints', '一段对你影响较大的经历', '', true, 8)}`;
+    return `<p class="helper">这部分为选填。如果愿意，建议尽量写下具体经历，它会帮助报告理解变化怎样延续至今；如果不想回答或感到不舒服，可以直接跳过。建议100—200字。</p><div class="prompt-box">可以围绕三个问题展开：事情发生前你怎样理解自己；事情发生后什么认识发生了变化；这种变化现在怎样影响你。</div>${field('turningPoints', '一段对你影响较大的经历', '', true, 8)}`;
   }
 
-  function render() {
+  function render(preserveScroll = false) {
+    const previousScroll = window.scrollY;
     if (screen === 'welcome') {
-      app.innerHTML = `<section class="card hero-card"><div class="hero-copy"><p class="kicker">从真实经验出发</p><h1>识己｜现实校准信息表</h1><p class="lead">让报告中的理解，能够落回你真正经历过的生活。</p><div class="hero-quote">这不是心理测验，也没有需要迎合的正确答案。只需写下你愿意提供的事实。</div><div class="notice-row"><span>8—12分钟</span><span>7道核心题</span><span>1道动态追问</span><span>1道选填深度题</span><span>本地保存</span></div><button class="primary hero-button" data-action="start">${answeredCount() ? '继续填写' : '开始填写'}<span>→</span></button><p class="privacy-note">回答不会自动上传。任何让你不舒服的问题都可以跳过。</p></div><div class="hero-visual"><img src="assets/hero-paper-path.jpg" alt="一页纸化为通向远山的青绿路径"><p class="image-caption">由经验入径 · 向理解而行</p></div></section>`;
+      app.innerHTML = `<section class="card hero-card"><div class="hero-copy"><p class="kicker">从真实经验出发</p><h1>识己｜现实校准信息表</h1><p class="lead">让报告中的理解，能够落回你真正经历过的生活。</p><div class="hero-quote">这不是心理测验，也没有需要迎合的正确答案。只需写下你愿意提供的事实。</div><div class="notice-row"><span>8—12分钟</span><span>7道核心题</span><span>1道动态追问</span><span>1道选填深度题</span><span>本地保存</span></div><button class="primary hero-button" data-action="start">${answeredCount() ? '继续填写' : '开始填写'}<span>→</span></button><p class="privacy-note">回答不会自动上传。任何让你不舒服的问题都可以跳过。</p></div><div class="hero-visual"><img src="assets/hero-paper-path.jpg" alt="一页纸化为通向远山的青绿路径"><p class="image-caption">念起觉心、知深见己</p></div></section>`;
     } else if (screen === 'form') {
       const progress = Math.round(((step + 1) / STEPS.length) * 100);
       app.innerHTML = `<section class="card form-card"><div class="progress-row"><span>第 ${step + 1} 步，共 ${STEPS.length} 步</span><span>${progress}%</span></div><div class="progress-track"><span style="width:${progress}%"></span></div><p class="section-number">${STEPS[step][0]} · ${STEPS[step][1]}</p><h1>${STEPS[step][2]}</h1>${stepBody(step)}<div class="form-actions"><button class="text-button" data-action="previous">← 返回</button><button class="primary" data-action="next">${step === STEPS.length - 1 ? '检查并导出' : '下一步'}<span>→</span></button></div><button class="skip-link" data-action="next">暂时跳过这一题</button></section>`;
     } else {
       app.innerHTML = `<section class="card"><p class="kicker">填写完成</p><h1>回看一遍，再带走它</h1><p class="lead">答案仍只保存在当前设备。你可以返回修改，也可以导出Markdown文件并主动发送给识己报告操作者。</p><div class="review-list">${STEPS.map(([number, label, title], index) => `<button data-edit="${index}"><span>${number}</span><div><strong>${label}</strong><small>${title}</small></div><b>修改</b></button>`).join('')}</div><div class="export-panel"><p>导出前，请确认没有身份证号、详细住址、账户信息、完整医疗记录或其他不必要的敏感资料。</p><button class="primary export-button" data-action="export">导出填写内容（.md）</button>${notice ? `<span class="export-notice" role="status">${notice}</span>` : ''}</div><div class="review-actions"><button class="text-button" data-action="last">← 返回最后一题</button><button class="danger-link" data-action="clear">清空全部内容</button></div></section>`;
     }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: preserveScroll ? previousScroll : 0, behavior: preserveScroll ? 'auto' : 'smooth' });
   }
 
   function lines(value, optionList) {
@@ -218,11 +222,11 @@
       const current = answers[name];
       answers[name] = current.includes(code) ? current.filter(item => item !== code) : current.length < max ? [...current, code] : current;
       if (name === 'focus' && !answers.focus.includes(answers.primaryFocus)) { answers.primaryFocus = ''; answers.dynamicAnswer = ''; }
-      save(); render(); return;
+      save(); render(true); return;
     }
 
     if (button.dataset.primary) {
-      if (answers.focus.includes(button.dataset.primary)) { answers.primaryFocus = button.dataset.primary; answers.dynamicAnswer = ''; save(); render(); }
+      if (answers.focus.includes(button.dataset.primary)) { answers.primaryFocus = button.dataset.primary; answers.dynamicAnswer = ''; save(); render(true); }
       return;
     }
 
