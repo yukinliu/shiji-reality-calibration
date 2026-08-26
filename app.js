@@ -6,7 +6,7 @@
 
   const OPTIONS = {
     focus: [
-      ['A', '更清楚地认识自己的特点与反复模式'], ['B', '理解自己的优势、能力与发挥条件'],
+      ['A', '更清楚地认识自己的特点与行为习惯'], ['B', '理解自己的优势、能力与发挥条件'],
       ['C', '事业、学习或专业发展'], ['D', '财富、资源与投入回报'],
       ['E', '合作、沟通与个人边界'], ['F', '亲密关系或家庭互动'],
       ['G', '压力、情绪与恢复方式'], ['H', '行动力、持续性与生活节奏'],
@@ -147,7 +147,7 @@
   function stepBody(index) {
     if (index === 0) return `<p class="helper">多选，最多选择2项；然后从已选主题中指定一项重点展开。</p>${choices('focus', 2)}${primaryFocus()}${field('focusQuestion', '你目前最想弄清楚的问题是什么？', '请用一句话说明，建议30—80字。', false, 3)}`;
     if (index === 1) return `${field('selfNow', '如果暂时不介绍年龄、职业和家庭身份，你会用哪一句话描述现在的自己？', '建议50字以内。', false, 3)}${subheading('别人较常肯定你什么？', '多选，最多选择3项。')}${choices('positive', 3)}${subheading('出现摩擦时，别人较常怎样评价你？', '多选，最多选择2项。')}${choices('friction', 2)}`;
-    if (index === 2) return `<p class="helper">请写1件近两年真实发生的事情，建议100—150字。它不需要是很大的成就。</p><div class="prompt-box">写成一段完整经历即可：当时需要处理什么、你采取了哪些关键行动、什么让你坚持、最后形成什么结果，以及你从中确认了什么能力。</div>${field('representativeExperience', '你的真实经历', '', false, 8)}`;
+    if (index === 2) return `<p class="helper">请写1件近两年真实发生的事情，建议100—150字。它不需要是很大的成就。</p><div class="prompt-box">写成一段完整经历即可：当时需要处理什么、你做了什么、结果如何。</div>${field('representativeExperience', '你的真实经历', '', false, 8)}`;
     if (index === 3) return `<p class="helper">多选，最多选择2项。</p>${choices('complex', 2)}${field('complexCase', '最近一次遇到复杂问题时，你最先做了什么？', '建议50字以内。', true, 3)}`;
     if (index === 4) return `${subheading('让你更愿意投入的条件', '多选，最多选择3项。')}${choices('invest', 3)}${subheading('让你容易失去动力的条件', '多选，最多选择2项。')}${choices('lose', 2)}${field('investExample', '一个“即使没人催促，你也愿意持续做”的例子', '建议50字以内。', true, 3)}`;
     if (index === 5) return `${subheading('最先出现的反应', '多选，最多选择2项。')}${choices('pressure', 2)}<div class="prompt-box">请简短说明：什么触发了压力？什么方式真正帮助你恢复？大约多久开始缓解？不必描述隐私细节。</div>${field('pressureExperience', '一次近期压力经历', '合计建议50—100字。', false, 5)}`;
