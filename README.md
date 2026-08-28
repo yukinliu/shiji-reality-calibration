@@ -4,7 +4,7 @@
 
 正式入口：https://yukinliu.github.io/shiji-reality-calibration/
 
-当前问卷版本为Reality Calibration v2.0：7道核心题、1道按首要关注主题出现的动态追问、1道选填深度题。
+当前问卷版本为 Reality Calibration v2.3：7 道核心题（第 1 题内含动态追问）和 1 道选填深度题。
 
 - 不调用GPT或其他外部接口；
 - 不需要注册或登录；
